@@ -6,6 +6,7 @@ namespace Enzyme.Commands;
 public static class CommandDelegator {
     private static readonly Dictionary<string, ICommandHandler?> dict = new() {
         { "pathway", new PathwayCommandHandler() },
+        { "outsider", new OutsiderCommandHandler() }
     };
 
     public static async Task Delegate(SocketSlashCommand command) {
@@ -22,5 +23,4 @@ public static class CommandDelegator {
         // And rider is what taught me it.
         return name[^2..] == "_g" ? name[..^2] : name;
     }
-
 }

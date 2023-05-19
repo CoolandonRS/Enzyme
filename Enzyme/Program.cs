@@ -14,8 +14,8 @@ internal static class Program {
     }, new Dictionary<char, FlagData>() {
         { 'C', new FlagData(new ArgDesc("-C", "(Re)Declare global commands")) },
         { 'c', new FlagData(new ArgDesc("-c", "Delete all global commands")) },
-        { 'G', new FlagData(new ArgDesc("-G", "Guild Only Mode. Requires --guild-id")) },
-        { 'g', new FlagData(new ArgDesc("-g", "Delete a guilds previous commands. Requires --guild-id"))}
+        { 'G', new FlagData(new ArgDesc("-G", "Guild Only Mode. Requires --guild-id or ENZYME_GUILD_ID")) },
+        { 'g', new FlagData(new ArgDesc("-g", "Delete a guilds previous commands. Requires --guild-id or ENZYME_GUILD_ID"))}
     });
     
     public static DiscordSocketClient client { get; private set; }
@@ -51,6 +51,12 @@ internal static class Program {
         }
 
         var guildId = argHandler.GetValue("guild-id");
+        if (!guildId.IsSet()) {
+            var env = Environment.GetEnvironmentVariable("ENZYME_GUILD_ID");
+            if (env != null) {
+                guildId = new ArgValue(env);
+            }
+        }
         
         if (argHandler.GetFlag('g')) {
             if (!guildId.IsSet()) throw new InvalidOperationException("-g without --guild-id");

@@ -16,6 +16,7 @@ public static class CommandRegistrar {
         var id = ulong.Parse(strId);
         WriteDebug($"Declaring Commands to guild {strId}");
         await AssignPathway(id);
+        await Outsider(id);
         WriteDebug($"Finished declaring commands to guild {strId}");
     }
 
@@ -64,6 +65,16 @@ public static class CommandRegistrar {
                 .WithType(ApplicationCommandOptionType.Integer)
             ).Build();
 
+        FullRegister(command, id);
+    }
+
+    public static async Task Outsider(ulong? id = null) {
+        if (id == null) throw new InvalidOperationException("AssignPathway cannot be declared globally");
+        var command = new SlashCommandBuilder().WithName("outsider").WithDescription("Register as an outsider").Build();
+        FullRegister(command, id);
+    }
+
+    private static void FullRegister(SlashCommandProperties? command, ulong? id) {
         try {
             Register(command, id);
         } catch (HttpException e) {
