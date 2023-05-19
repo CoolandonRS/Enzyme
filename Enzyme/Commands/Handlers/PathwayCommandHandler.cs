@@ -37,8 +37,7 @@ public class PathwayCommandHandler : ICommandHandler {
                 }
                 await Program.client.Rest.RemoveRoleAsync(id.guild, id.user, GetPathway(param).id);
                 WriteDebug("Removed Role");
-                var ids = roleDict.Values.Select(v => v.id).ToArray();
-                if (GetRoleIds(id).Any(rId => ids.Contains(rId)) && GetRoleIds(id).Contains(studentId)) {
+                if (InCatalyst(id) && GetRoleIds(id).Contains(studentId)) {
                     await Program.client.Rest.RemoveRoleAsync(id.guild, id.user, studentId);
                     WriteDebug("Removed Attending");
                 }
