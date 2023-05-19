@@ -9,6 +9,7 @@ namespace Enzyme.Commands;
 public static class CommandRegistrar {
     public static async Task RegisterAll() {
         WriteDebug("Declaring Global Commands");
+        await ReactRole();
         WriteDebug("Finished Global Declarations");
     }
 
@@ -23,6 +24,7 @@ public static class CommandRegistrar {
     public static async Task RegisterAllGuild(string strId) {
         var id = ulong.Parse(strId);
         WriteDebug($"Declaring Global Commands to guild {strId}");
+        await ReactRole(id);
         WriteDebug($"Finished declaring Global commands to guild {strId}");
     }
 
@@ -72,6 +74,21 @@ public static class CommandRegistrar {
         if (id == null) throw new InvalidOperationException("AssignPathway cannot be declared globally");
         var command = new SlashCommandBuilder().WithName("outsider").WithDescription("Register as an outsider").Build();
         FullRegister(command, id);
+    }
+
+    public static async Task ReactRole(ulong? id = null) {
+        var append = id == null ? "" : "_g";
+        var command = new SlashCommandBuilder().WithName($"reactrole{append}").WithDescription("Manage Reaction Roles")
+            .AddOption(new SlashCommandOptionBuilder()
+                .WithName("action").WithDescription("Action to perform").WithRequired(true)
+                .AddChoice("add", 1)
+                .AddChoice("remove", 2)
+                .AddChoice("list", 3)
+                .AddChoice("help", 4)
+                .WithType(ApplicationCommandOptionType.Integer)
+            ).AddOption("message-id", ApplicationCommandOptionType.String, "The message id to act on")
+            .AddOption("reaction", ApplicationCommandOptionType.String, "The emote to use")
+            .AddOption("role", ApplicationCommandOptionType.Role, "The role to apply");
     }
 
     private static void FullRegister(SlashCommandProperties? command, ulong? id) {

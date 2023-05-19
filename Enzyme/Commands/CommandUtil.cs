@@ -4,9 +4,12 @@ using Discord.WebSocket;
 namespace Enzyme.Commands; 
 
 public static class CommandUtil {
-    public static readonly ulong studentId = 1109211805156380682;
-    public static readonly ulong outsiderId  = 1109224098636255318;
-    public static readonly ulong teacherId = 1109223971091660831;
+    public const ulong studentId = 1109211805156380682;
+    public const ulong outsiderId  = 1109224098636255318;
+    public const ulong teacherId = 1109223971091660831;
+    public const ulong devId = 1109206031994728469;
+    public const ulong modId = 1109225871048441997;
+    public const ulong adminId = 1109226279523324014;
     // TODO: Fix this. Appears to be off.
     public static readonly Dictionary<long, (ulong id, string name)> roleDict = new() {
         {  1, (1109205041866350622, "Programming") },
@@ -38,6 +41,22 @@ public static class CommandUtil {
         { 9, (1109241870615334993, "Woods Cross") }
     };
 
+    public enum AuthLevel : ulong {
+        Teacher = teacherId, 
+        Dev = devId, 
+        Mod = modId, 
+        Admin = adminId
+    }
+    
+    public static bool IsAuth((ulong guild, ulong user) id, AuthLevel level) {
+        return GetRoleIds(id).Contains((ulong)level);
+    }
+    
+    public static bool IsAuth((ulong guild, ulong user) id, AuthLevel[] levels) {
+        var ids = GetRoleIds(id);
+        return levels.Any(level => ids.Contains((ulong)level));
+    }
+
     private static readonly ulong[] CatalystIds = roleDict.Values.Select(v => v.id).ToArray();
     public static bool InCatalyst((ulong guild, ulong user) id) {
         return GetRoleIds(id).Any(rId => CatalystIds.Contains(rId));
@@ -51,6 +70,10 @@ public static class CommandUtil {
     public static EmbedBuilder BaseEmbed(ulong userId) {
         var user = Program.client.GetUser(userId);
         return new EmbedBuilder().WithAuthor(user.ToString(), user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl()).WithCurrentTimestamp();
+    }
+
+    public static Embed UnauthorizedEmbed(ulong userId) {
+        return BaseEmbed(userId).WithColor(Color.Red).WithTitle("Not Authorized").WithDescription("You are not authorized to do that").Build();
     }
 
     public static SocketRole[] GetRoles((ulong guild, ulong user) id) {

@@ -6,7 +6,8 @@ namespace Enzyme.Commands;
 public static class CommandDelegator {
     private static readonly Dictionary<string, ICommandHandler?> dict = new() {
         { "pathway", new PathwayCommandHandler() },
-        { "outsider", new OutsiderCommandHandler() }
+        { "outsider", new OutsiderCommandHandler() },
+        { "reactrole", new ReactRoleCommandHandler() }
     };
 
     public static async Task Delegate(SocketSlashCommand command) {
